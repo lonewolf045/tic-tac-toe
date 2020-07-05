@@ -54,6 +54,20 @@
                     <button type="button" class="subBtn" id = "subBtn2">Submit</button>
                 </form>
             </div>
+            <div id = 'select' class = 'element-container'>
+                <b>Mode:</b>
+                <div>
+                    <input type="radio" id="PvP" name="select" value="PvP">
+                    <label for="PvP">Player vs Player (You can select this and just click on start, generic names will be selected)</label>
+                </div>
+                <div>
+                    <input type="radio" id="AI" name="select" value="AI">
+                    <label for="AI">Player vs J.A.V.R.C.M.E. (You can just select this and click on start, generic names will be selected)
+                        <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;*Just A Very Random Choice Making Entity
+                    </label>
+                </div>
+            </div>
             <button type="button" class= "startBtn" id = "startBtn" onclick="displayController.startGame()">Start</button>
         </div>
         <div id = "gamePage">

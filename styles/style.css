@@ -170,10 +170,22 @@ input[name = name]:focus {
     border-top: none;
 }
 
+#result {
+    display: block;
+    width: 50%;
+    margin: 0px auto;
+    text-align: center;
+    font-size: 40px;
+    padding: 2.5% 1%;
+    margin-bottom: 30px;
+    font-family: Quicksand, sans-serif;
+}
+
 #btn {
     display: flex;
     width: 50%;
     margin: 0px auto;
+    transition: linear 0.2s;
 }
 
 .gameBtn {

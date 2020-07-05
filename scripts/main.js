@@ -1,15 +1,18 @@
 const Player = (name,symbol) => {
-    return {name,symbol};
+    let wins = 0;
+    return {name,symbol,wins};
 }
 
 const gameBoard  = (() => {
     //let gameBoardPositions = Array.apply(null,Array(9)).map((x,i) => {return i});
     let gameBoardArray = Array(9).fill("");
     //console.log(gameBoardPositions);
-    const player1 = Player("Player 1", "x");
-    const player2 = Player("Player 2", "o");
-    const currPlayer = player1;
-    return {gameBoardArray,player1,player2,currPlayer};
+    let player1 = Player("Player 1", "X");
+    let player2 = Player("Player 2", "O");
+    let currPlayer;
+    let gameMode;
+    let gameMoves = 9;
+    return {gameBoardArray,player1,player2,currPlayer,gameMode,gameMoves};
 })();
 
 const displayController = ((doc) => {
@@ -25,8 +28,13 @@ const displayController = ((doc) => {
                     e.target.innerHTML = gameBoard.currPlayer.symbol;
                     gameBoard.gameBoardArray[Number(e.target.classList[1])] = gameBoard.currPlayer.symbol;
                     console.log(Number(e.target.classList[1]));
+                    gameBoard.gameMoves -= 1;
                     gameControls.checkWin();
-                    gameControls.switchTurn();
+                    if(gameBoard.gameMode === 'PvP') 
+                        gameControls.switchTurn();
+                    if(gameBoard.gameMode === 'AI')
+                        setTimeout(() => {  gameControls.playAI(); }, 500);
+                        
                 }
             });
         });
@@ -42,8 +50,32 @@ const displayController = ((doc) => {
         doc.forms['player2Form'].classList.remove('disabled');
         subButton1.disabled = false;
         subButton2.disabled = false;
-
+        gameBoard.currPlayer = gameBoard.player1;
+        if(gameBoard.gameMode === 'AI') {
+            if(gameBoard.player1.symbol === 'X')
+                gameBoard.player2 = Player('AI','O');
+            else
+                gameBoard.player2 = Player('AI','X'); 
+        }
     } 
+
+    const modeSelect = function() {
+        const radios = doc.getElementsByName('select');
+        console.log(radios);
+        radios.forEach((radio) => {
+            radio.addEventListener('click', (e) =>{
+                gameBoard.gameMode = e.target.value;
+                if(gameBoard.gameMode === 'AI') {
+                    doc.forms['player2Form'].classList.add('disabled');
+                    subButton2.disabled = true;
+                } else {
+                    doc.forms['player2Form'].classList.remove('disabled');
+                    subButton2.disabled = false; 
+                }
+            });
+        });
+    }
+
     const goBackGame = function() {
         const openingPage = doc.querySelector("#openingPage");
         const gamePage = doc.querySelector("#gamePage");
@@ -60,6 +92,8 @@ const displayController = ((doc) => {
         gameBoard.gameBoardArray = Array(9).fill("");
         const result = doc.getElementById('result');
         result.innerHTML = "";
+        gameBoard.gameMoves = 9;
+        gameBoard.currPlayer = gameBoard.player1;
     }
     const subEntry = function() {
         subButton1.addEventListener('click', (e) => {
@@ -75,6 +109,11 @@ const displayController = ((doc) => {
             if(subButton1.disabled === true) {
                 let name = doc.forms['player2Form']['name'];
                 let symbol = doc.forms['player2Form']['symbol'];
+                if(symbol.value === gameBoard.player1.symbol){
+                    window.alert("Can't have same symbols");
+                    doc.forms['player2Form'].reset();
+                    return;
+                }
                 gameBoard.player2 = Player(name.value,symbol.value);
                 e.target.disabled = true;
                 doc.forms['player2Form'].classList.add('disabled');
@@ -85,7 +124,7 @@ const displayController = ((doc) => {
             }
         });
     }
-    return {render,startGame,resetGame,subEntry,goBackGame};
+    return {render,startGame,resetGame,subEntry,goBackGame,modeSelect};
 })(document);
 
 const gameControls = ((doc) => {
@@ -97,15 +136,42 @@ const gameControls = ((doc) => {
                 gameControls.gameFinish = 1;
                 const result = doc.getElementById('result');
                 result.innerHTML = `${gameBoard.currPlayer.name} wins`;
+                return;
             }
+        }
+        if(gameBoard.gameMoves === 0) {
+            const result = doc.getElementById('result');
+            result.innerHTML = `Game ends in draw`;
         }
     }
     const switchTurn = function() {
-        gameBoard.currPlayer == gameBoard.player1 ? (gameBoard.currPlayer = gameBoard.player2) : (gameBoard.currPlayer = gameBoard.player1);
+        gameBoard.currPlayer === gameBoard.player1 ? (gameBoard.currPlayer = gameBoard.player2) : (gameBoard.currPlayer = gameBoard.player1);
         console.log('Switched');
     }
-    return {checkWin, gameFinish, switchTurn};
+
+    const playAI = function() {
+        if(gameControls.gameFinish === 0) {
+            gameBoard.gameMoves -= 1;
+            gameBoard.currPlayer = gameBoard.player2;
+            let cell = Math.floor(Math.random() * Math.floor(9));
+            while(gameBoard.gameBoardArray[cell] !== '') {
+                cell = Math.floor(Math.random() * Math.floor(9));
+            }
+            let acCell = "#cell" + cell;
+            const selecCell = doc.querySelector(acCell);
+            console.log(acCell,selecCell);
+            selecCell.innerHTML = gameBoard.currPlayer.symbol;
+            gameBoard.gameBoardArray[Number(selecCell.classList[1])] = gameBoard.currPlayer.symbol;
+            console.log(Number(selecCell.classList[1]));
+            
+            gameControls.checkWin();
+            gameBoard.currPlayer = gameBoard.player1;
+        }
+    }
+
+    return {checkWin, gameFinish, switchTurn , playAI};
 })(document);
 
 displayController.render();
 displayController.subEntry();
+displayController.modeSelect();
