@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href = "styles/style.css">
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+    <header>
+        <h1>Tic-Tac-Toe</h1>
+    </header>
+    <main>
+        <div id = "openingPage">
+            <div class="form-popup" id="form-contain">
+                <form action="/action_page.php" class="form-container" name = "player1Form">
+                    <h2>Player 1</h2>
+                    <div id = 'text' class = 'element-container'>
+                        <label for="name"><b>Name:</b></label>
+                        <input type="text" name="name" required placeholder="Player 1">
+                    </div>
+                    <div id = 'radio' class = 'element-container'>
+                        <b>Symbol:</b>
+                        <span>
+                            <input type="radio" id="x" name="symbol" value="X" checked>
+                            <label for="x">X</label>
+                        </span>
+                        <span>
+                            <input type="radio" id="o" name="symbol" value="O">
+                            <label for="o">O</label>
+                        </span>
+                    </div>
+    
+                    <button type="button" class="subBtn" id = "subBtn1">Submit</button>
+                    
+                </form>
+                <form action="/action_page.php" class="form-container" name = "player2Form">
+                    <h2>Player 2</h2>
+                    <div id = 'text' class = 'element-container'>
+                        <label for="name"><b>Name:</b></label>
+                        <input type="text" name="name" required placeholder="Player 2">
+                    </div>
+                    <div id = 'radio' class = 'element-container'>
+                        <b>Symbol:</b>
+                        <span>
+                            <input type="radio" id="x" name="symbol" value="X">
+                            <label for="x">X</label>
+                        </span>
+                        <span>
+                            <input type="radio" id="o" name="symbol" value="O"  checked>
+                            <label for="o">O</label>
+                        </span>
+                    </div>
+                    <button type="button" class="subBtn" id = "subBtn2">Submit</button>
+                </form>
+            </div>
+            <button type="button" class= "startBtn" id = "startBtn" onclick="displayController.startGame()">Start</button>
+        </div>
+        <div id = "gamePage">
+            <div id = "game-board">
+                <div class = "cell 0" id = "cell0"></div>
+                <div class = "cell 1" id = "cell1"></div>
+                <div class = "cell 2" id = "cell2"></div>
+                <div class = "cell 3" id = "cell3"></div>
+                <div class = "cell 4" id = "cell4"></div>
+                <div class = "cell 5" id = "cell5"></div>
+                <div class = "cell 6" id = "cell6"></div>
+                <div class = "cell 7" id = "cell7"></div>
+                <div class = "cell 8" id = "cell8"></div>
+            </div>
+            <div id = "result"></div>
+            <div id = "btn">
+                <button type="button" class = "resetBtn gameBtn" onclick="displayController.resetGame()">Reset</button>
+                <button type="button" class = "goBackBtn gameBtn" onclick="displayController.goBackGame()">Go Back To Main Menu</button>
+            </div>
+        </div>
+    </main>
+    <footer>
+        
+    </footer>
+    <script src = "scripts/main.js"></script>
+</body>
+</html>
