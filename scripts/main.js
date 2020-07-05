@@ -33,7 +33,9 @@ const displayController = ((doc) => {
                     if(gameBoard.gameMode === 'PvP') 
                         gameControls.switchTurn();
                     if(gameBoard.gameMode === 'AI')
-                        setTimeout(() => {  gameControls.playAI(); }, 500);
+                        setTimeout(() => {  gameControls.playAISuper(); }, 0);
+                    if(gameBoard.gameMode === 'AISuper')
+                        setTimeout(() => {  gameControls.playAISuper(); }, 500);
                         
                 }
             });
@@ -51,7 +53,7 @@ const displayController = ((doc) => {
         subButton1.disabled = false;
         subButton2.disabled = false;
         gameBoard.currPlayer = gameBoard.player1;
-        if(gameBoard.gameMode === 'AI') {
+        if(gameBoard.gameMode === 'AI' || gameBoard.gameMode === 'AISuper') {
             if(gameBoard.player1.symbol === 'X')
                 gameBoard.player2 = Player('AI','O');
             else
@@ -169,8 +171,111 @@ const gameControls = ((doc) => {
         }
     }
 
-    return {checkWin, gameFinish, switchTurn , playAI};
+    const playAISuper = function() {
+        if(gameControls.gameFinish === 0) {
+            let newBoard = [...gameBoard.gameBoardArray];
+            gameBoard.gameMoves -= 1;
+            gameBoard.currPlayer = gameBoard.player2;
+            let cell = AI.minimaxAI(newBoard,gameBoard.player2).index;
+            let acCell = "#cell" + cell;
+            const selecCell = doc.querySelector(acCell);
+            console.log(acCell,selecCell);
+            selecCell.innerHTML = gameBoard.currPlayer.symbol;
+            gameBoard.gameBoardArray[Number(selecCell.classList[1])] = gameBoard.currPlayer.symbol;
+            console.log(Number(selecCell.classList[1]));
+            gameControls.checkWin();
+            gameBoard.currPlayer = gameBoard.player1;
+        }
+    }
+
+    return {checkWin, gameFinish, switchTurn , playAI, playAISuper};
 })(document);
+
+const AI = (() => {
+        
+    const minimaxAI = function(board,player) {
+        let moves = [];
+        let emptySpots = findEmpty(board);
+        console.log(board);
+        console.log(emptySpots);
+        if (checkWin(board, gameBoard.player1)) {
+            return {score:-10};
+        } else if (checkWin(board, gameBoard.player2)) {
+           return {score:10};
+        } else if (emptySpots.length === 0) {
+             return {score:0};
+        }
+        for(let i = 0; i < emptySpots.length; i++) {
+            let currMove = {};
+            currMove.index = emptySpots[i];
+            board[emptySpots[i]] = player.symbol;
+
+            if(player === gameBoard.player2) {
+                let outcome = AI.minimaxAI(board,gameBoard.player1);
+                currMove.score = outcome.score;
+            } else {
+                let outcome = AI.minimaxAI(board,gameBoard.player2);
+                currMove.score = outcome.score;
+            }
+            board[emptySpots[i]] = "";
+            moves.push(currMove);
+        }
+        let bestMove;
+        if(player === gameBoard.player2){
+            let bestScore = -10000;
+            for(let i = 0; i < moves.length; i++){
+                if(moves[i].score > bestScore){
+                    bestScore = moves[i].score;
+                    bestMove = i;
+                }
+            }
+        } else {
+            let bestScore = 10000;
+            for(let i = 0; i < moves.length; i++){
+                if(moves[i].score < bestScore){
+                    bestScore = moves[i].score;
+                    bestMove = i;
+                }
+            }
+        }
+        console.log(moves);
+        return moves[bestMove];
+    }
+    const findEmpty = function(playBoard) {
+        let empty = [];
+        for(let i = 0; i < playBoard.length; i++) {
+            if(playBoard[i] === '') {
+                empty.push(i);
+            }
+        }
+        return empty;
+    }
+    const checkWin = function(board,player) {
+        /*const winCombos = [['0','1','2'],['3','4','5'],['6','7','8'],['0','3','6'],['1','4','7'],['2','5','8'],['0','4','8'],['2','4','6']];
+        for(let i = 0; i < winCombos.length; i++) {
+            if(gameBoard.gameBoardArray[winCombos[i][0]] === gameBoard.currPlayer.symbol && gameBoard.gameBoardArray[winCombos[i][1]] === gameBoard.currPlayer.symbol && gameBoard.gameBoardArray[winCombos[i][2]] === gameBoard.currPlayer.symbol) {
+                return true;
+            }
+        }
+        return false;*/
+    
+        if (
+            (board[0] == player.symbol && board[1] == player.symbol.symbol && board[2] == player.symbol) ||
+            (board[3] == player.symbol && board[4] == player.symbol && board[5] == player.symbol) ||
+            (board[6] == player.symbol && board[7] == player.symbol && board[8] == player.symbol) ||
+            (board[0] == player.symbol && board[3] == player.symbol && board[6] == player.symbol) ||
+            (board[1] == player.symbol && board[4] == player.symbol && board[7] == player.symbol) ||
+            (board[2] == player.symbol && board[5] == player.symbol && board[8] == player.symbol) ||
+            (board[0] == player.symbol && board[4] == player.symbol && board[8] == player.symbol) ||
+            (board[2] == player.symbol && board[4] == player.symbol && board[6] == player.symbol)
+            ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    return {minimaxAI};
+})();
 
 displayController.render();
 displayController.subEntry();
