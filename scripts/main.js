@@ -10,7 +10,7 @@ const gameBoard  = (() => {
     let player1 = Player("Player 1", "X");
     let player2 = Player("Player 2", "O");
     let currPlayer;
-    let gameMode;
+    let gameMode = '';
     let gameMoves = 9;
     return {gameBoardArray,player1,player2,currPlayer,gameMode,gameMoves};
 })();
@@ -46,22 +46,26 @@ const displayController = ((doc) => {
         });
     }
     const startGame = function() {
-        const openingPage = doc.querySelector("#openingPage");
-        const gamePage = doc.querySelector("#gamePage");
-        openingPage.style.display = "none";
-        gamePage.style.display = "block";
-        doc.forms['player2Form'].reset();
-        doc.forms['player1Form'].reset();
-        doc.forms['player1Form'].classList.remove('disabled');
-        doc.forms['player2Form'].classList.remove('disabled');
-        subButton1.disabled = false;
-        subButton2.disabled = false;
-        gameBoard.currPlayer = gameBoard.player1;
-        if(gameBoard.gameMode === 'AI' || gameBoard.gameMode === 'AISuper') {
-            if(gameBoard.player1.symbol === 'X')
-                gameBoard.player2 = Player('AI','O');
-            else
-                gameBoard.player2 = Player('AI','X'); 
+        if(gameBoard.gameMode === '') {
+            window.alert("Please select a mode,then proceed");
+        } else {
+            const openingPage = doc.querySelector("#openingPage");
+            const gamePage = doc.querySelector("#gamePage");
+            openingPage.style.display = "none";
+            gamePage.style.display = "block";
+            doc.forms['player2Form'].reset();
+            doc.forms['player1Form'].reset();
+            doc.forms['player1Form'].classList.remove('disabled');
+            doc.forms['player2Form'].classList.remove('disabled');
+            subButton1.disabled = false;
+            subButton2.disabled = false;
+            gameBoard.currPlayer = gameBoard.player1;
+            if(gameBoard.gameMode === 'AI' || gameBoard.gameMode === 'AISuper') {
+                if(gameBoard.player1.symbol === 'X')
+                    gameBoard.player2 = Player('AI','O');
+                else
+                    gameBoard.player2 = Player('AI','X'); 
+            }
         }
     } 
 
