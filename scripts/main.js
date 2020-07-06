@@ -30,15 +30,14 @@ const displayController = ((doc) => {
                     console.log(Number(e.target.classList[1]));
                     gameBoard.gameMoves -= 1;
                     gameControls.checkWin();
-                    //if(gameBoard.gameMode === 'PvP') 
-                    gameControls.switchTurn();
+                    if(gameBoard.gameMode === 'PvP') 
+                        gameControls.switchTurn();
                     if(gameBoard.gameMode === 'AI') {
                         setTimeout(() => {  gameControls.playAI(); }, 500);
-                        gameControls.switchTurn();
                     }
                     if(gameBoard.gameMode === 'AISuper') {
                         setTimeout(() => {  gameControls.playAISuper(); }, 0);
-                        gameControls.switchTurn();
+                        //gameControls.switchTurn();
                     }
                         
                 }
@@ -108,29 +107,37 @@ const displayController = ((doc) => {
     const subEntry = function() {
         subButton1.addEventListener('click', (e) => {
             console.log(e);
-            let name = doc.forms['player1Form']['name'];
-            let symbol = doc.forms['player1Form']['symbol'];
-            gameBoard.player1 = Player(name.value,symbol.value);
-            e.target.disabled = true;
-            doc.forms['player1Form'].classList.add('disabled');
+            if(gameBoard.gameMode === '') {
+                window.alert("Please select a mode,then proceed");
+            } else {
+                let name = doc.forms['player1Form']['name'];
+                let symbol = doc.forms['player1Form']['symbol'];
+                gameBoard.player1 = Player(name.value,symbol.value);
+                e.target.disabled = true;
+                doc.forms['player1Form'].classList.add('disabled');
+            }
         });
         subButton2.addEventListener('click',(e) => {
             console.log(e);
-            if(subButton1.disabled === true) {
-                let name = doc.forms['player2Form']['name'];
-                let symbol = doc.forms['player2Form']['symbol'];
-                if(symbol.value === gameBoard.player1.symbol){
-                    window.alert("Can't have same symbols");
-                    doc.forms['player2Form'].reset();
-                    return;
+            if(gameBoard.gameMode === '') {
+                window.alert("Please select a mode,then proceed");
+            } else {
+                if(subButton1.disabled === true) {
+                    let name = doc.forms['player2Form']['name'];
+                    let symbol = doc.forms['player2Form']['symbol'];
+                    if(symbol.value === gameBoard.player1.symbol){
+                        window.alert("Can't have same symbols");
+                        doc.forms['player2Form'].reset();
+                        return;
+                    }
+                    gameBoard.player2 = Player(name.value,symbol.value);
+                    e.target.disabled = true;
+                    doc.forms['player2Form'].classList.add('disabled');
                 }
-                gameBoard.player2 = Player(name.value,symbol.value);
-                e.target.disabled = true;
-                doc.forms['player2Form'].classList.add('disabled');
-            }
-            else {
-                window.alert("Please fill details of Player 1 first");
-                doc.forms['player2Form'].reset();
+                else {
+                    window.alert("Please fill details of Player 1 first");
+                    doc.forms['player2Form'].reset();
+                }
             }
         });
     }
@@ -152,6 +159,7 @@ const gameControls = ((doc) => {
         if(gameBoard.gameMoves === 0) {
             const result = doc.getElementById('result');
             result.innerHTML = `Game ends in draw`;
+            gameControls.gameFinish = 1;
         }
     }
     const switchTurn = function() {
@@ -175,8 +183,9 @@ const gameControls = ((doc) => {
             console.log(Number(selecCell.classList[1]));
             
             gameControls.checkWin();
-            gameBoard.currPlayer = gameBoard.player1;
+            
         }
+        gameBoard.currPlayer = gameBoard.player1;
     }
 
     const playAISuper = function() {
@@ -192,8 +201,9 @@ const gameControls = ((doc) => {
             gameBoard.gameBoardArray[Number(selecCell.classList[1])] = gameBoard.currPlayer.symbol;
             console.log(Number(selecCell.classList[1]));
             gameControls.checkWin();
-            gameBoard.currPlayer = gameBoard.player1;
+            
         }
+        gameBoard.currPlayer = gameBoard.player1;
     }
 
     return {checkWin, gameFinish, switchTurn , playAI, playAISuper};
