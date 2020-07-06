@@ -30,12 +30,16 @@ const displayController = ((doc) => {
                     console.log(Number(e.target.classList[1]));
                     gameBoard.gameMoves -= 1;
                     gameControls.checkWin();
-                    if(gameBoard.gameMode === 'PvP') 
+                    //if(gameBoard.gameMode === 'PvP') 
+                    gameControls.switchTurn();
+                    if(gameBoard.gameMode === 'AI') {
+                        setTimeout(() => {  gameControls.playAI(); }, 500);
                         gameControls.switchTurn();
-                    if(gameBoard.gameMode === 'AI')
+                    }
+                    if(gameBoard.gameMode === 'AISuper') {
                         setTimeout(() => {  gameControls.playAISuper(); }, 0);
-                    if(gameBoard.gameMode === 'AISuper')
-                        setTimeout(() => {  gameControls.playAISuper(); }, 500);
+                        gameControls.switchTurn();
+                    }
                         
                 }
             });
@@ -67,7 +71,7 @@ const displayController = ((doc) => {
         radios.forEach((radio) => {
             radio.addEventListener('click', (e) =>{
                 gameBoard.gameMode = e.target.value;
-                if(gameBoard.gameMode === 'AI') {
+                if(gameBoard.gameMode === 'AI' || gameBoard.gameMode === 'AISuper') {
                     doc.forms['player2Form'].classList.add('disabled');
                     subButton2.disabled = true;
                 } else {
@@ -95,7 +99,7 @@ const displayController = ((doc) => {
         const result = doc.getElementById('result');
         result.innerHTML = "";
         gameBoard.gameMoves = 9;
-        gameBoard.currPlayer = gameBoard.player1;
+        //gameBoard.currPlayer = gameBoard.player1;
     }
     const subEntry = function() {
         subButton1.addEventListener('click', (e) => {
@@ -196,8 +200,8 @@ const AI = (() => {
     const minimaxAI = function(board,player) {
         let moves = [];
         let emptySpots = findEmpty(board);
-        console.log(board);
-        console.log(emptySpots);
+        //console.log(board);
+        //console.log(emptySpots);
         if (checkWin(board, gameBoard.player1)) {
             return {score:-10};
         } else if (checkWin(board, gameBoard.player2)) {
@@ -219,6 +223,8 @@ const AI = (() => {
             }
             board[emptySpots[i]] = "";
             moves.push(currMove);
+            //if(emptySpots.length === 5 && emptySpots[i] === 1)
+                //console.log(currMove,player);
         }
         let bestMove;
         if(player === gameBoard.player2){
@@ -238,6 +244,8 @@ const AI = (() => {
                 }
             }
         }
+        //if(emptySpots.length === 6)
+            //console.log(moves[bestMove]);
         console.log(moves);
         return moves[bestMove];
     }
@@ -260,7 +268,7 @@ const AI = (() => {
         return false;*/
     
         if (
-            (board[0] == player.symbol && board[1] == player.symbol.symbol && board[2] == player.symbol) ||
+            (board[0] == player.symbol && board[1] == player.symbol && board[2] == player.symbol) ||
             (board[3] == player.symbol && board[4] == player.symbol && board[5] == player.symbol) ||
             (board[6] == player.symbol && board[7] == player.symbol && board[8] == player.symbol) ||
             (board[0] == player.symbol && board[3] == player.symbol && board[6] == player.symbol) ||
